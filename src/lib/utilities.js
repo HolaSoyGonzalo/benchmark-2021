@@ -1,8 +1,8 @@
 const { readJson, writeJson } = require("fs-extra");
 const { join } = require("path");
 
-const examPath = join(__dirname, "../exam/exam.json");
-const questionsPath = join(__dirname, "../questions/questions.js");
+const examPath = join(__dirname, "../exams/exams.json");
+const questionsPath = join(__dirname, "../questions/questions.json");
 
 const readDB = async (filepath) => {
   try {
@@ -10,7 +10,6 @@ const readDB = async (filepath) => {
     return fileJson;
   } catch (error) {
     console.log(error);
-    next(error);
   }
 };
 
@@ -19,7 +18,6 @@ const writeDB = async (filepath, data) => {
     await writeJson(filepath, data);
   } catch (error) {
     console.log(error);
-    next(error);
   }
 };
 
