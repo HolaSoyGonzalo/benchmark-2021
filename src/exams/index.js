@@ -69,4 +69,21 @@ Router.post("/:examID/answer", async (req, res) => {
   }
 });
 
+Router.get("/:examID", async (req, res) => {
+  try {
+    const examsDB = await readExam();
+    const selectedExam = examDB.find((exam) => exam._id === req.params.examID);
+    let score = 0;
+    selectedExam.questions.forEach((question) => {
+      if (question.answers[question.providedAnswer].isCorrect === true) {
+        score += 1;
+      }
+    });
+    selectedExam.score = score;
+    res.send(selectedExam);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 module.exports = Router;
