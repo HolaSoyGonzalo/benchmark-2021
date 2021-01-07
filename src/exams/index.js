@@ -44,7 +44,7 @@ Router.post("/start", async (req, res) => {
     });
     //OVERWRITE OLD DB WITH NEW DB
     await writeExam(examsDB);
-    res.send("Added! Pog!");
+    res.send("All Good Bruh");
   } catch (error) {
     console.log(error);
   }
@@ -63,9 +63,9 @@ Router.post("/:examID/answer", async (req, res) => {
       examsDB[selectedExamIndex].questions[req.body.question].providedAnswer =
         req.body.answer;
       await writeExam(examsDB);
-      res.send("🎉 Answer recieved! 🎉");
+      res.send("Answer Yeeted");
     } else {
-      res.send("Couldn't find this exam 🥺");
+      res.send("DUNNO WHERE THE FUCK THE ANSWER IS");
     }
   } catch (error) {
     console.log(error);
@@ -85,6 +85,7 @@ Router.get("/:examID", async (req, res) => {
       }
     });
     selectedExam.score = score;
+    selectedExam.isCompleted = true;
     res.send(selectedExam);
   } catch (error) {
     console.log(error);
