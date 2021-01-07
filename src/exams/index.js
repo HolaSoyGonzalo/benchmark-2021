@@ -11,8 +11,9 @@ Router.post("/start", async (req, res) => {
     const questionsDB = await readQuestions();
     //CREATE VARIABLE FOR EXAM QUESTIONS
     const actualQuestions = [];
+    //CREATE VARIABLE FOR EXAM DURATION
+    let examDuration = 0;
     //GET RANDOM QUESTION INDEXES
-
     try {
       const selectedQuestions = [];
       for (let i = 0; i < 5; i++) {
@@ -26,6 +27,8 @@ Router.post("/start", async (req, res) => {
       //GET QUESTIONS FROM RANDOM INDEXES ABOVE
       selectedQuestions.forEach((index) => {
         actualQuestions.push(questionsDB[index]);
+
+        examDuration += questionsDB[index].duration;
       });
     } catch (error) {
       console.log(error);
@@ -36,12 +39,12 @@ Router.post("/start", async (req, res) => {
       _id: uniqid(),
       examDate: new Date(),
       isCompleted: false,
-      totalDuration: 30,
+      totalDuration: examDuration,
       questions: actualQuestions,
     });
     //OVERWRITE OLD DB WITH NEW DB
     await writeExam(examsDB);
-    res.send("Job Done! Bitch");
+    res.send("Added! Pog!");
   } catch (error) {
     console.log(error);
   }
@@ -49,20 +52,20 @@ Router.post("/start", async (req, res) => {
 
 Router.post("/:examID/answer", async (req, res) => {
   try {
-    //Get Ex DB
+    //GET EXAM DATABASE
     const examsDB = await readExam();
-    //Getting Our Exam From The Req.Params
+    //GETTING OUR EXAM FROM THE REQ.PARAMS
     const selectedExamIndex = examsDB.findIndex(
       (exam) => exam._id === req.params.examID
     );
-    //If/Else
+    //IF/ELSE
     if (selectedExamIndex !== -1) {
       examsDB[selectedExamIndex].questions[req.body.question].providedAnswer =
         req.body.answer;
       await writeExam(examsDB);
-      res.send("Gotcha! Answer Arrived!");
+      res.send("🎉 Answer recieved! 🎉");
     } else {
-      res.send("Not Finding this Exam O_O ! ");
+      res.send("Couldn't find this exam 🥺");
     }
   } catch (error) {
     console.log(error);
@@ -71,8 +74,10 @@ Router.post("/:examID/answer", async (req, res) => {
 
 Router.get("/:examID", async (req, res) => {
   try {
+    //GETTING SELECTED EXAM
     const examsDB = await readExam();
-    const selectedExam = examDB.find((exam) => exam._id === req.params.examID);
+    const selectedExam = examsDB.find((exam) => exam._id === req.params.examID);
+    //CALCULATE CURRENT SCORE
     let score = 0;
     selectedExam.questions.forEach((question) => {
       if (question.answers[question.providedAnswer].isCorrect === true) {
